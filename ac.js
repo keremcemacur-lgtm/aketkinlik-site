@@ -5,7 +5,9 @@
   var KEY = 'sb_publishable_ewHHCznhVpGxwj-Xr_j-pg_12LwJp1x';
   var PKG = 'com.aketkinlik.app';
   var PLAY = 'https://play.google.com/store/apps/details?id=' + PKG;
+  var APPSTORE = 'https://apps.apple.com/tr/app/id6825077803';
   var android = /android/i.test(navigator.userAgent);
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var $ = function (id) { return document.getElementById(id); };
   var q = new URLSearchParams(location.search);
   var mode = document.body.getAttribute('data-mode');
@@ -57,7 +59,15 @@
       }).catch(function () {});
   }
   $('open').href = appUrl(path);
-  $('play').href = PLAY;
+  // Mağaza bağlantısı: iPhone'da App Store, Android'de Google Play, masaüstünde ikisi birden.
+  var st = $('stores');
+  if (st) {
+    st.innerHTML = '';
+    var link = function (href, text) { var a = document.createElement('a'); a.href = href; a.textContent = text; return a; };
+    if (ios) st.appendChild(link(APPSTORE, 'App Store’dan indir'));
+    else if (android) st.appendChild(link(PLAY, 'Google Play’den yükle'));
+    else { st.appendChild(link(APPSTORE, 'App Store')); st.appendChild(document.createTextNode(' · ')); st.appendChild(link(PLAY, 'Google Play')); }
+  }
   // Bir kez otomatik dene (uygulama yüklüyse doğrudan açılır); olmazsa sayfa yerinde kalır.
   setTimeout(function () { if (!document.hidden) location.href = appUrl(path); }, 350);
 })();
